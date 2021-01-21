@@ -6,7 +6,7 @@
   box-sizing: border-box;
   position: relative;
   border: 1px solid white;
-
+  transition: transform 1s ease;
   > div {
     visibility: hidden;
     background: rgba(0, 0, 0, 0.7);
@@ -25,6 +25,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 1s ease;
   }
 
   &:hover > div {
@@ -47,4 +48,3 @@
     }
   }
 }
-

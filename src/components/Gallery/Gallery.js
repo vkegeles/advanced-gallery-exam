@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import Image from '../Image';
 import './Gallery.scss';
+const ROTATE_ANGLE = 90;
+const TARGET_SIZE = 200;
+
 
 class Gallery extends React.Component {
   static propTypes = {
@@ -13,11 +16,17 @@ class Gallery extends React.Component {
     super(props);
     this.state = {
       images: [],
-      galleryWidth: this.getGalleryWidth()
+      galleryWidth: 0
     };
   }
 
-  getGalleryWidth(){
+  getImageSize() {
+    const { galleryWidth } = this.state;
+    const imagesPerRow = Math.floor(galleryWidth / TARGET_SIZE);
+    return (galleryWidth / imagesPerRow);
+  }
+
+  getGalleryWidth() {
     try {
       return document.body.clientWidth;
     } catch (e) {
@@ -40,17 +49,28 @@ class Gallery extends React.Component {
           res.photos.photo &&
           res.photos.photo.length > 0
         ) {
-          this.setState({images: res.photos.photo});
+          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0 }));
+          this.setState({ images: imagesArr });
         }
       });
   }
 
   componentDidMount() {
-    this.getImages(this.props.tag);
+    this.setState({
+      galleryWidth: document.body.clientWidth
+    }); this.getImages(this.props.tag);
+    window.addEventListener('resize', this.updateWidth);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateWidth);
+  }
+
+
+  updateWidth = () => {
     this.setState({
       galleryWidth: document.body.clientWidth
     });
-  }
+  };
 
   componentWillReceiveProps(props) {
     this.getImages(props.tag);
@@ -60,10 +80,25 @@ class Gallery extends React.Component {
     return (
       <div className="gallery-root">
         {this.state.images.map(dto => {
-          return <Image key={'image-' + dto.id} dto={dto} galleryWidth={this.state.galleryWidth}/>;
+          return <Image key={'image-' + dto.id} dto={dto} size={this.getImageSize()} onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand} />;
         })}
       </div>
     );
+  }
+
+  handleRotate = (image) => {
+    const images = [...this.state.images];
+    const index = images.indexOf(image);
+    images[index].rotate = (images[index].rotate + ROTATE_ANGLE);
+    this.setState({ images });
+  }
+
+  handleDelete = (image) => {
+    const images = this.state.images.filter(dto => dto.id !== image.id);
+    this.setState({ images });
+  }
+
+  handleExpand = (image) => {
   }
 }
 
