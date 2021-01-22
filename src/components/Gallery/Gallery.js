@@ -2,8 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import Image from '../Image';
+import ReactModal from 'react-modal';
 import './Gallery.scss';
 const ROTATE_ANGLE = 90;
+const TARGET_SIZE = 200;
+
 
 class Gallery extends React.Component {
   static propTypes = {
@@ -14,9 +17,12 @@ class Gallery extends React.Component {
     super(props);
     this.state = {
       images: [],
-      galleryWidth: 1000
+      galleryWidth: 1000,
+      showModal: false,
+      urlImage: ''
     };
   }
+
 
   getImages(tag) {
     const getImagesUrl = `services/rest/?method=flickr.photos.search&api_key=522c1f9009ca3609bcbaf08545f067ad&tags=${tag}&tag_mode=any&per_page=100&format=json&nojsoncallback=1`;
@@ -55,20 +61,18 @@ class Gallery extends React.Component {
         galleryWidth: newWidth
       });
     }
-  };
+  }
 
   componentWillReceiveProps(props) {
     this.getImages(props.tag);
   }
 
-  render() {
-    return (
-      <div className="gallery-root" id="gallery-root">
-        {this.state.images.map(dto => {
-          return <Image key={'image-' + dto.id} dto={dto} galleryWidth={this.state.galleryWidth} onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand} />;
-        })}
-      </div>
-    );
+  handleOpenModal = () => {
+    this.setState({ showModal: true });
+  }
+
+  handleCloseModal = () => {
+    this.setState({ showModal: false });
   }
 
   handleRotate = (image) => {
@@ -83,7 +87,33 @@ class Gallery extends React.Component {
     this.setState({ images });
   }
 
-  handleExpand = (image) => {
+  handleExpand = (urlImage) => {
+    this.setState({ urlImage });
+    this.handleOpenModal();
+  }
+
+  getImageSize(galleryWidth) {
+    const imagesPerRow = Math.floor(galleryWidth / TARGET_SIZE);
+    return (galleryWidth / imagesPerRow);
+  }
+
+  render() {
+    return (
+      <div className="gallery-root" id="gallery-root">
+        <ReactModal
+          isOpen={this.state.showModal}
+          onRequestClose={this.handleCloseModal}
+          className="Modal"
+          overlayClassName="Overlay"
+        >
+          <img className='img-modal' src={this.state.urlImage} alt='big-modal' />
+        </ReactModal>
+
+        {this.state.images.map(dto => {
+          return <Image key={'image-' + dto.id} dto={dto} size={this.getImageSize(this.state.galleryWidth)} onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand} />;
+        })}
+      </div>
+    );
   }
 }
 

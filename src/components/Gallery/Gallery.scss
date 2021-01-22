@@ -12,3 +12,26 @@
 .gallery-intro {
   font-size: 15pt;
 }
+
+.Modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.Overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.img-modal {
+  width: auto;
+  max-width: 80vw;
+  height: 80vh;
+}
