@@ -13,7 +13,7 @@
   font-size: 15pt;
 }
 
-.Modal {
+.gallery-modal-main {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -21,7 +21,7 @@
   transform: translate(-50%, -50%);
 }
 
-.Overlay {
+.gallery-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -30,8 +30,13 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.img-modal {
+.gallery-modal-img {
   width: auto;
   max-width: 80vw;
   height: 80vh;
+}
+
+.gallery-loading {
+  height: 100px;
+  margin: 30px;
 }

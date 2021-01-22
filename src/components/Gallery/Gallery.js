@@ -123,24 +123,17 @@ class Gallery extends React.Component {
   }
 
   render() {
-    // Additional css
-    const loadingCSS = {
-      height: '100px',
-      margin: '30px'
-    };
-    // const loadingTextCSS = { display: this.state.loading ? "block" : "none" };
-
     return (
       <div className="gallery-root" id="gallery-root">
 
         <ReactModal
           isOpen={this.state.showModal}
           onRequestClose={this.handleCloseModal}
-          className="Modal"
-          overlayClassName="Overlay"
+          className="gallery-modal-main"
+          overlayClassName="gallery-modal-overlay"
           contentLabel="Expanded image in Modal"
         >
-          <img className='img-modal' src={this.state.urlImage} alt='big-modal' />
+          <img className='gallery-modal-img' src={this.state.urlImage} alt='big-modal' />
         </ReactModal>
 
         {this.state.images.map(dto => {
@@ -150,8 +143,8 @@ class Gallery extends React.Component {
         })}
 
         <div
+          className='gallery-loading'
           ref={loadingRef => (this.loadingRef = loadingRef)}
-          style={loadingCSS}
         >
           {this.state.loading && <span >Loading...</span>}
         </div>
