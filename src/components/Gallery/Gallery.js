@@ -19,13 +19,17 @@ class Gallery extends React.Component {
       images: [],
       galleryWidth: 1000,
       showModal: false,
-      urlImage: ''
+      urlImage: '',
+      loading: false,
+      page: 0, //last uploaded page
+      prevY: 0
     };
   }
 
 
-  getImages(tag) {
-    const getImagesUrl = `services/rest/?method=flickr.photos.search&api_key=522c1f9009ca3609bcbaf08545f067ad&tags=${tag}&tag_mode=any&per_page=100&format=json&nojsoncallback=1`;
+  getImages(tag, page) {
+    this.setState({ loading: true });
+    const getImagesUrl = `services/rest/?method=flickr.photos.search&api_key=522c1f9009ca3609bcbaf08545f067ad&tags=${tag}&tag_mode=any&per_page=100&format=json&nojsoncallback=1&page=${page}`;
     const baseUrl = 'https://api.flickr.com/';
     axios({
       url: getImagesUrl,
@@ -40,15 +44,27 @@ class Gallery extends React.Component {
           res.photos.photo &&
           res.photos.photo.length > 0
         ) {
-          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0 }));
-          this.setState({ images: imagesArr }, () => { this.updateWidth() });
+          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page }));
+          this.setState({ images: [...this.state.images, ...imagesArr], loading: false, page: page }, () => { this.updateWidth() });
         }
       });
   }
 
   componentDidMount() {
-    this.getImages(this.props.tag);
+    this.getImages(this.props.tag, this.state.page + 1);
     window.addEventListener('resize', () => this.updateWidth());
+
+    var options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0
+    };
+
+    this.observer = new IntersectionObserver(
+      this.handleObserver,
+      options
+    );
+    this.observer.observe(this.loadingRef);
   }
   componentWillUnmount() {
     window.removeEventListener('resize', () => this.updateWidth());
@@ -64,7 +80,8 @@ class Gallery extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    this.getImages(props.tag);
+    this.setState({ images: [], page: 0, prevY: 0 }, this.getImages(props.tag, 1));
+
   }
 
   handleOpenModal = () => {
@@ -92,27 +109,54 @@ class Gallery extends React.Component {
     this.handleOpenModal();
   }
 
+  handleObserver = (entities, observer) => {
+    const y = entities[0].boundingClientRect.y;
+    if (this.state.prevY > y && !this.state.loading) {
+      this.getImages(this.props.tag, this.state.page + 1);
+    }
+    this.setState({ prevY: y });
+  }
+
   getImageSize(galleryWidth) {
     const imagesPerRow = Math.floor(galleryWidth / TARGET_SIZE);
     return (galleryWidth / imagesPerRow);
   }
 
   render() {
+    // Additional css
+    const loadingCSS = {
+      height: '100px',
+      margin: '30px'
+    };
+    // const loadingTextCSS = { display: this.state.loading ? "block" : "none" };
+
     return (
       <div className="gallery-root" id="gallery-root">
+
         <ReactModal
           isOpen={this.state.showModal}
           onRequestClose={this.handleCloseModal}
           className="Modal"
           overlayClassName="Overlay"
+          contentLabel="Expanded image in Modal"
         >
           <img className='img-modal' src={this.state.urlImage} alt='big-modal' />
         </ReactModal>
 
         {this.state.images.map(dto => {
-          return <Image key={'image-' + dto.id} dto={dto} size={this.getImageSize(this.state.galleryWidth)} onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand} />;
+          //Flickr API returns duplicated images on diffrent pages - see summary
+          //For resolving non-unique keys problem I used number of page in key
+          return <Image key={'image-' + dto.page + '-' + dto.id} dto={dto} size={this.getImageSize(this.state.galleryWidth)} onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand} />;
         })}
+
+        <div
+          ref={loadingRef => (this.loadingRef = loadingRef)}
+          style={loadingCSS}
+        >
+          {this.state.loading && <span >Loading...</span>}
+        </div>
       </div>
+
     );
   }
 }
