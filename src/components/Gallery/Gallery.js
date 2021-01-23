@@ -154,7 +154,6 @@ class Gallery extends React.Component {
         else {
           images.splice(index, 0, this.state.imageDroped);
           images.splice(this.state.indexDroped + 1, 1);
-
         }
       }
       else {
@@ -168,15 +167,12 @@ class Gallery extends React.Component {
         }
       }
       this.setState({ images, tempIndex: index });
-
     }
-
   }
 
   render() {
     return (
       <div className="gallery-root" id="gallery-root">
-
         <ReactModal
           isOpen={this.state.showModal}
           onRequestClose={this.handleCloseModal}
@@ -209,8 +205,8 @@ class Gallery extends React.Component {
         >
           <PulseLoader er loading={this.state.loading} className='loading-indicator'
             sizeUnit={"px"}
-            size={50}
-            color={'#123abc'} ></PulseLoader>
+            size={30}
+            color={'#454545'} ></PulseLoader>
 
           {this.state.loading && <span>Loading</span>}
         </div>

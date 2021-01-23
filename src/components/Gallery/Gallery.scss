@@ -46,7 +46,11 @@
   height: 100px;
   margin: 30px;
   font-size: 15pt;
-  color: #123abc;
+  color: #3a3a3a;
+  & > .loading-indicator {
+    display: block;
+    margin: 20px auto;
+  }
 }
 
 .item-enter {
@@ -62,9 +66,4 @@
 .item-exit-active {
   opacity: 0;
   transition: opacity 500ms ease-in;
-}
-
-.loading-indicator {
-  display: block;
-  margin: 20px auto;
 }
