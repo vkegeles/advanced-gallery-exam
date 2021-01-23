@@ -193,10 +193,10 @@ class Gallery extends React.Component {
             //For resolving non-unique keys problem I used number of page in key
             return (
               <CSSTransition
-                key={'image-' + dto.page + '-' + dto.id + dto.temp}
+                key={'image-' + dto.page + '-' + dto.id}
                 timeout={300}
                 classNames="item"
-              ><Image key={'image-' + dto.page + '-' + dto.id + dto.temp} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
+              ><Image key={'image-' + dto.page + '-' + dto.id} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
                 onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand}
                 onDragStart={this.handleDragStart} onDrop={this.handleDrop} onDragOver={this.handleDragOver} /></CSSTransition>);
           })}
