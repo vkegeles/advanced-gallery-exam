@@ -36,7 +36,6 @@ class Gallery extends React.Component {
 
 
   getImages(tag, page, load) {
-    console.log("getImages", tag, page, load)
     if (load) {
       if (!this.state.loading) this.setState({ loading: true });
       const getImagesUrl = `services/rest/?method=flickr.photos.search&api_key=522c1f9009ca3609bcbaf08545f067ad&tags=${tag}&tag_mode=any&per_page=100&format=json&nojsoncallback=1&page=${page}`;
@@ -95,9 +94,7 @@ class Gallery extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    console.log("componentWillReceiveProps", props.tag, props.load);
     this.setState({ images: [], page: 0, prevY: 0, loading: true }, this.getImages(props.tag, 1, props.load));
-
   }
 
   handleOpenModal = () => {

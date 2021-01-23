@@ -16,16 +16,13 @@ class App extends React.Component {
     };
   }
 
-  callback = () => console.log("succeed", this.state);
   getInputTag = () => { return this.state.inputTag };
 
   setLoad = debounce(() => {
-    console.log("debounce")
-    this.setState({ tag: this.getInputTag(), load: true }, this.callback)
+    this.setState({ tag: this.getInputTag(), load: true })
   }, 1000);
 
   handleChange = (event) => {
-    console.log("handleChange ")
     this.setState({ inputTag: event.target.value.toLowerCase(), load: false })
     this.setLoad();
   }
