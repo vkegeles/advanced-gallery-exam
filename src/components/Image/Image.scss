@@ -59,3 +59,12 @@
     }
   }
 }
+
+.temp > div {
+  visibility: visible;
+  background: rgba(153, 209, 100, 0.5);
+
+  & .image-icon {
+    visibility: hidden;
+  }
+}

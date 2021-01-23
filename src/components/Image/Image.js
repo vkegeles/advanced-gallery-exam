@@ -18,7 +18,7 @@ function Image(props) {
 
   return (
     <div
-      className="image-root"
+      className={'image-root ' + (props.dto.temp)}
       onDragStart={(event) => onDragStart(event)}
       onDragOver={(event) => onDragOver(event)}
       onDrop={() => props.onDrop(props.index, props.dto)}

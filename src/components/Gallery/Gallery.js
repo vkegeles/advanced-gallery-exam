@@ -4,7 +4,7 @@ import axios from 'axios';
 import Image from '../Image';
 import ReactModal from 'react-modal';
 import './Gallery.scss';
-import { getImageSize, swapInArray } from './../../api/helper';
+import { getImageSize } from './../../api/helper';
 const ROTATE_ANGLE = 90;
 
 
@@ -23,7 +23,9 @@ class Gallery extends React.Component {
       loading: false,
       page: 0, //last uploaded page
       prevY: 0,
-      indexDroped: -1
+      indexDroped: -1,
+      imageDroped: {},
+      tempIndex: -1
     };
   }
 
@@ -45,7 +47,7 @@ class Gallery extends React.Component {
           res.photos.photo &&
           res.photos.photo.length > 0
         ) {
-          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page, showDropPlace: false }));
+          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page, temp: '' }));
           this.setState({ images: [...this.state.images, ...imagesArr], loading: false, page: page }, () => { this.updateWidth() });
         }
       });
@@ -123,17 +125,47 @@ class Gallery extends React.Component {
   }
 
   handleDragStart = (index, image) => {
-    this.setState({ indexDroped: index })
+    // const images = [...this.state.images];
+    // images.splice(index, 1)
+    this.setState({ indexDroped: index, imageDroped: { ...image, temp: 'temp' } });
     // event.dataTransfer.setData("image", image);
   };
 
   handleDrop = (index, image) => {
     const images = [...this.state.images];
-    swapInArray(images, this.state.indexDroped, index);
-    this.setState({ indexDroped: -1, images })
+    images[index].temp = '';
+    this.setState({ indexDroped: -1, imageDroped: {}, images, tempIndex: -1 })
   };
 
   handleDragOver = (index, image) => {
+    const images = [...this.state.images];
+
+    if ((index !== this.state.indexDroped || this.state.tempIndex > -1) && index !== this.state.tempIndex) {
+      if (this.state.tempIndex == -1) {
+        if (this.state.indexDroped < index) {
+          images.splice(this.state.indexDroped, 1);
+          images.splice(index, 0, this.state.imageDroped);
+        }
+        else {
+          images.splice(index, 0, this.state.imageDroped);
+          images.splice(this.state.indexDroped + 1, 1);//change
+
+        }
+      }
+      else {
+        if (index > this.state.tempIndex) {
+          images.splice(index + 1, 0, this.state.imageDroped);
+          images.splice(this.state.tempIndex, 1);
+        }
+        else {
+          images.splice(this.state.tempIndex, 1);
+          images.splice(index, 0, this.state.imageDroped);
+        }
+      }
+      this.setState({ images, tempIndex: index });
+
+    }
+
   }
 
   render() {
@@ -153,7 +185,7 @@ class Gallery extends React.Component {
         {this.state.images.map((dto, index) => {
           //Flickr API returns duplicated images on diffrent pages - see summary
           //For resolving non-unique keys problem I used number of page in key
-          return (<Image key={'image-' + dto.page + '-' + dto.id} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
+          return (<Image key={'image-' + dto.page + '-' + dto.id + dto.temp} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
             onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand}
             onDragStart={this.handleDragStart} onDrop={this.handleDrop} onDragOver={this.handleDragOver} />);
         })}
