@@ -5,6 +5,10 @@ import Image from '../Image';
 import ReactModal from 'react-modal';
 import './Gallery.scss';
 import { getImageSize } from './../../api/helper';
+import {
+  CSSTransition,
+  TransitionGroup
+} from 'react-transition-group';
 const ROTATE_ANGLE = 90;
 
 
@@ -184,15 +188,21 @@ class Gallery extends React.Component {
             transform: `rotate(${this.state.rotateModalImage}deg)`
           }} />
         </ReactModal>
+        <TransitionGroup className="todo-list">
 
-        {this.state.images.map((dto, index) => {
-          //Flickr API returns duplicated images on diffrent pages - see summary
-          //For resolving non-unique keys problem I used number of page in key
-          return (<Image key={'image-' + dto.page + '-' + dto.id + dto.temp} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
-            onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand}
-            onDragStart={this.handleDragStart} onDrop={this.handleDrop} onDragOver={this.handleDragOver} />);
-        })}
-
+          {this.state.images.map((dto, index) => {
+            //Flickr API returns duplicated images on diffrent pages - see summary
+            //For resolving non-unique keys problem I used number of page in key
+            return (
+              <CSSTransition
+                key={'image-' + dto.page + '-' + dto.id + dto.temp}
+                timeout={300}
+                classNames="item"
+              ><Image key={'image-' + dto.page + '-' + dto.id + dto.temp} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
+                onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand}
+                onDragStart={this.handleDragStart} onDrop={this.handleDrop} onDragOver={this.handleDragOver} /></CSSTransition>);
+          })}
+        </TransitionGroup>
         <div
           className='gallery-loading'
           ref={loadingRef => (this.loadingRef = loadingRef)}
