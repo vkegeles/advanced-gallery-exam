@@ -8,12 +8,12 @@ function Image(props) {
     return `https://farm${dto.farm}.staticflickr.com/${dto.server}/${dto.id}_${dto.secret}.jpg`;
   }
 
-  const onDragStart = (event) => {
+  const onDragStart = () => {
     props.onDragStart(props.index, props.dto);
   };
   const onDragOver = (event) => {
     event.preventDefault();
-    props.onDragOver(props.index, props.dto);
+    props.onDragOver(props.index);
   };
 
   return (
@@ -21,7 +21,7 @@ function Image(props) {
       className={'image-root ' + (props.dto.temp)}
       onDragStart={(event) => onDragStart(event)}
       onDragOver={(event) => onDragOver(event)}
-      onDrop={() => props.onDrop(props.index, props.dto)}
+      onDrop={() => props.onDrop(props.index)}
       draggable
       style={{
         backgroundImage: `url(${urlFromDto(props.dto)})`,
@@ -33,8 +33,8 @@ function Image(props) {
       <div style={{
         transform: `rotate(${-props.dto.rotate}deg)` //reverse rotation for child
       }}>
-        <FontAwesome className="image-icon" name="sync-alt" title="rotate" onClick={() => props.onRotate(props.index, props.dto)} />
-        <FontAwesome className="image-icon" name="trash-alt" title="delete" onClick={() => props.onDelete(props.index, props.dto)} />
+        <FontAwesome className="image-icon" name="sync-alt" title="rotate" onClick={() => props.onRotate(props.index)} />
+        <FontAwesome className="image-icon" name="trash-alt" title="delete" onClick={() => props.onDelete(props.index)} />
         <FontAwesome className="image-icon" name="expand" title="expand" onClick={() => props.onExpand(urlFromDto(props.dto), props.dto.rotate)} />
       </div>
     </div>

@@ -109,13 +109,13 @@ class Gallery extends React.Component {
     this.setState({ showModal: false });
   }
 
-  handleRotate = (index, image) => {
+  handleRotate = (index) => {
     const images = [...this.state.images];
     images[index].rotate = (images[index].rotate + ROTATE_ANGLE);
     this.setState({ images });
   }
 
-  handleDelete = (index, image) => {
+  handleDelete = (index) => {
     const images = [...this.state.images];
     images.splice(index, 1);
     this.setState({ images });
@@ -138,13 +138,13 @@ class Gallery extends React.Component {
     this.setState({ indexDroped: index, imageDroped: { ...image, temp: 'temp' } });
   };
 
-  handleDrop = (index, image) => {
+  handleDrop = (index) => {
     const images = [...this.state.images];
     images[index].temp = '';
     this.setState({ indexDroped: -1, imageDroped: {}, images, tempIndex: -1 })
   };
 
-  handleDragOver = (index, image) => {
+  handleDragOver = (index) => {
     const images = [...this.state.images];
 
     if ((index !== this.state.indexDroped || this.state.tempIndex > -1) && index !== this.state.tempIndex) {
