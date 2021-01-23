@@ -45,6 +45,8 @@
 .gallery-loading {
   height: 100px;
   margin: 30px;
+  font-size: 15pt;
+  color: #123abc;
 }
 
 .item-enter {
@@ -60,4 +62,9 @@
 .item-exit-active {
   opacity: 0;
   transition: opacity 500ms ease-in;
+}
+
+.loading-indicator {
+  display: block;
+  margin: 20px auto;
 }

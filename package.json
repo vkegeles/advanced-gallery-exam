@@ -83,6 +83,7 @@
     "react-dom": "^15.0.0",
     "react-fontawesome": "^1.6.1",
     "react-modal": "^1.6.2",
+    "react-spinners": "^0.2.4",
     "react-transition-group": "^2.3.0"
   },
   "gh-pages-deploy": {

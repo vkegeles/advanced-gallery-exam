@@ -9,6 +9,8 @@ import {
   CSSTransition,
   TransitionGroup
 } from 'react-transition-group';
+import { PulseLoader } from 'react-spinners';
+
 const ROTATE_ANGLE = 90;
 
 
@@ -205,7 +207,12 @@ class Gallery extends React.Component {
           className='gallery-loading'
           ref={loadingRef => (this.loadingRef = loadingRef)}
         >
-          {this.state.loading && <span >Loading...</span>}
+          <PulseLoader er loading={this.state.loading} className='loading-indicator'
+            sizeUnit={"px"}
+            size={50}
+            color={'#123abc'} ></PulseLoader>
+
+          {this.state.loading && <span>Loading</span>}
         </div>
       </div>
 
