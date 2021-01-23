@@ -58,6 +58,8 @@ class Gallery extends React.Component {
             const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page, temp: '' }));
             this.setState({ images: [...this.state.images, ...imagesArr], loading: false, page: page }, () => { this.updateWidth() });
           }
+          this.setState({ loading: false }, () => { this.updateWidth() });
+
         });
     }
   }
@@ -203,12 +205,15 @@ class Gallery extends React.Component {
           className='gallery-loading'
           ref={loadingRef => (this.loadingRef = loadingRef)}
         >
-          <PulseLoader er loading={this.state.loading} className='loading-indicator'
-            sizeUnit={"px"}
+          <PulseLoader loading={this.state.loading} className='loading-indicator'
+            sizeUnit={'px'}
             size={30}
             color={'#454545'} ></PulseLoader>
 
           {this.state.loading && <span>Loading</span>}
+          {!this.state.loading && (this.props.tag != '') && (this.state.images.length == 0) && <span>No images. Please enter another search tag</span>}
+          {!this.state.loading && (this.props.tag == '') && <span>Please enter a search tag</span>}
+
         </div>
       </div>
 
