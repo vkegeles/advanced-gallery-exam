@@ -7,6 +7,7 @@
   position: relative;
   border: 1px solid white;
   transition: transform 1s ease;
+  cursor: grab;
   > div {
     visibility: hidden;
     background: rgba(0, 0, 0, 0.7);
@@ -30,6 +31,16 @@
 
   &:hover > div {
     visibility: visible;
+  }
+
+  &:active > div {
+    visibility: visible;
+    opacity: 0;
+  }
+
+  &:active .image-icon {
+    visibility: visible;
+    opacity: 0;
   }
 
   .image-icon {

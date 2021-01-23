@@ -4,14 +4,25 @@ import FontAwesome from 'react-fontawesome';
 import './Image.scss';
 
 function Image(props) {
-
   function urlFromDto(dto) {
     return `https://farm${dto.farm}.staticflickr.com/${dto.server}/${dto.id}_${dto.secret}.jpg`;
   }
 
+  const onDragStart = (event) => {
+    props.onDragStart(props.index, props.dto);
+  };
+  const onDragOver = (event) => {
+    event.preventDefault();
+    props.onDragOver(props.index, props.dto);
+  };
+
   return (
     <div
       className="image-root"
+      onDragStart={(event) => onDragStart(event)}
+      onDragOver={(event) => onDragOver(event)}
+      onDrop={() => props.onDrop(props.index, props.dto)}
+      draggable
       style={{
         backgroundImage: `url(${urlFromDto(props.dto)})`,
         width: props.size + 'px',
@@ -31,9 +42,15 @@ function Image(props) {
 
 }
 
-
 Image.propTypes = {
   dto: PropTypes.object,
-  size: PropTypes.number
+  size: PropTypes.number,
+  index: PropTypes.number,
+  onRotate: PropTypes.func,
+  onDelete: PropTypes.func,
+  onExpand: PropTypes.func,
+  onDragStart: PropTypes.func,
+  onDragOver: PropTypes.func,
+  onDrop: PropTypes.func
 }
 export default Image;

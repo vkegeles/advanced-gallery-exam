@@ -4,8 +4,8 @@ import axios from 'axios';
 import Image from '../Image';
 import ReactModal from 'react-modal';
 import './Gallery.scss';
+import { getImageSize, swapInArray } from './../../api/helper';
 const ROTATE_ANGLE = 90;
-const TARGET_SIZE = 200;
 
 
 class Gallery extends React.Component {
@@ -22,7 +22,8 @@ class Gallery extends React.Component {
       urlImage: '',
       loading: false,
       page: 0, //last uploaded page
-      prevY: 0
+      prevY: 0,
+      indexDroped: -1
     };
   }
 
@@ -44,7 +45,7 @@ class Gallery extends React.Component {
           res.photos.photo &&
           res.photos.photo.length > 0
         ) {
-          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page }));
+          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page, showDropPlace: false }));
           this.setState({ images: [...this.state.images, ...imagesArr], loading: false, page: page }, () => { this.updateWidth() });
         }
       });
@@ -68,6 +69,10 @@ class Gallery extends React.Component {
   }
   componentWillUnmount() {
     window.removeEventListener('resize', () => this.updateWidth());
+    window.addEventListener('touchmove', this.handleTouchMove);
+    window.addEventListener('mousemove', this.handleMouseMove);
+    window.addEventListener('touchend', this.handleMouseUp);
+    window.addEventListener('mouseup', this.handleMouseUp);
   }
 
   updateWidth() {
@@ -117,9 +122,18 @@ class Gallery extends React.Component {
     this.setState({ prevY: y });
   }
 
-  getImageSize(galleryWidth) {
-    const imagesPerRow = Math.floor(galleryWidth / TARGET_SIZE);
-    return (galleryWidth / imagesPerRow);
+  handleDragStart = (index, image) => {
+    this.setState({ indexDroped: index })
+    // event.dataTransfer.setData("image", image);
+  };
+
+  handleDrop = (index, image) => {
+    const images = [...this.state.images];
+    swapInArray(images, this.state.indexDroped, index);
+    this.setState({ indexDroped: -1, images })
+  };
+
+  handleDragOver = (index, image) => {
   }
 
   render() {
@@ -136,10 +150,12 @@ class Gallery extends React.Component {
           <img className='gallery-modal-img' src={this.state.urlImage} alt='big-modal' />
         </ReactModal>
 
-        {this.state.images.map(dto => {
+        {this.state.images.map((dto, index) => {
           //Flickr API returns duplicated images on diffrent pages - see summary
           //For resolving non-unique keys problem I used number of page in key
-          return <Image key={'image-' + dto.page + '-' + dto.id} dto={dto} size={this.getImageSize(this.state.galleryWidth)} onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand} />;
+          return (<Image key={'image-' + dto.page + '-' + dto.id} dto={dto} size={getImageSize(this.state.galleryWidth)} index={index}
+            onRotate={this.handleRotate} onDelete={this.handleDelete} onExpand={this.handleExpand}
+            onDragStart={this.handleDragStart} onDrop={this.handleDrop} onDragOver={this.handleDragOver} />);
         })}
 
         <div
