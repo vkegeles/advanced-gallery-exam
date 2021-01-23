@@ -25,7 +25,7 @@ class Gallery extends React.Component {
       showModal: false,
       urlModalImage: '',
       rotateModalImage: 0,
-      loading: false,
+      loading: true,
       page: 0, //last uploaded page
       prevY: 0,
       indexDroped: -1,
@@ -35,31 +35,34 @@ class Gallery extends React.Component {
   }
 
 
-  getImages(tag, page) {
-    this.setState({ loading: true });
-    const getImagesUrl = `services/rest/?method=flickr.photos.search&api_key=522c1f9009ca3609bcbaf08545f067ad&tags=${tag}&tag_mode=any&per_page=100&format=json&nojsoncallback=1&page=${page}`;
-    const baseUrl = 'https://api.flickr.com/';
-    axios({
-      url: getImagesUrl,
-      baseURL: baseUrl,
-      method: 'GET'
-    })
-      .then(res => res.data)
-      .then(res => {
-        if (
-          res &&
-          res.photos &&
-          res.photos.photo &&
-          res.photos.photo.length > 0
-        ) {
-          const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page, temp: '' }));
-          this.setState({ images: [...this.state.images, ...imagesArr], loading: false, page: page }, () => { this.updateWidth() });
-        }
-      });
+  getImages(tag, page, load) {
+    console.log("getImages", tag, page, load)
+    if (load) {
+      if (!this.state.loading) this.setState({ loading: true });
+      const getImagesUrl = `services/rest/?method=flickr.photos.search&api_key=522c1f9009ca3609bcbaf08545f067ad&tags=${tag}&tag_mode=any&per_page=100&format=json&nojsoncallback=1&page=${page}`;
+      const baseUrl = 'https://api.flickr.com/';
+      axios({
+        url: getImagesUrl,
+        baseURL: baseUrl,
+        method: 'GET'
+      })
+        .then(res => res.data)
+        .then(res => {
+          if (
+            res &&
+            res.photos &&
+            res.photos.photo &&
+            res.photos.photo.length > 0
+          ) {
+            const imagesArr = res.photos.photo.map(photo => Object.assign({ ...photo, rotate: 0, page: page, temp: '' }));
+            this.setState({ images: [...this.state.images, ...imagesArr], loading: false, page: page }, () => { this.updateWidth() });
+          }
+        });
+    }
   }
 
   componentDidMount() {
-    this.getImages(this.props.tag, this.state.page + 1);
+    this.getImages(this.props.tag, this.state.page + 1, this.props.load);
     window.addEventListener('resize', () => this.updateWidth());
 
     var options = {
@@ -92,7 +95,8 @@ class Gallery extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ images: [], page: 0, prevY: 0 }, this.getImages(props.tag, 1));
+    console.log("componentWillReceiveProps", props.tag, props.load);
+    this.setState({ images: [], page: 0, prevY: 0, loading: true }, this.getImages(props.tag, 1, props.load));
 
   }
 
@@ -124,16 +128,13 @@ class Gallery extends React.Component {
   handleObserver = (entities, observer) => {
     const y = entities[0].boundingClientRect.y;
     if (this.state.prevY > y && !this.state.loading) {
-      this.getImages(this.props.tag, this.state.page + 1);
+      this.getImages(this.props.tag, this.state.page + 1, this.props.load);
     }
     this.setState({ prevY: y });
   }
 
   handleDragStart = (index, image) => {
-    // const images = [...this.state.images];
-    // images.splice(index, 1)
     this.setState({ indexDroped: index, imageDroped: { ...image, temp: 'temp' } });
-    // event.dataTransfer.setData("image", image);
   };
 
   handleDrop = (index, image) => {
