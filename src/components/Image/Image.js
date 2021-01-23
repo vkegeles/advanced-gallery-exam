@@ -33,9 +33,9 @@ function Image(props) {
       <div style={{
         transform: `rotate(${-props.dto.rotate}deg)` //reverse rotation for child
       }}>
-        <FontAwesome className="image-icon" name="sync-alt" title="rotate" onClick={() => props.onRotate(props.dto)} />
-        <FontAwesome className="image-icon" name="trash-alt" title="delete" onClick={() => props.onDelete(props.dto)} />
-        <FontAwesome className="image-icon" name="expand" title="expand" onClick={() => props.onExpand(urlFromDto(props.dto))} />
+        <FontAwesome className="image-icon" name="sync-alt" title="rotate" onClick={() => props.onRotate(props.index, props.dto)} />
+        <FontAwesome className="image-icon" name="trash-alt" title="delete" onClick={() => props.onDelete(props.index, props.dto)} />
+        <FontAwesome className="image-icon" name="expand" title="expand" onClick={() => props.onExpand(urlFromDto(props.dto), props.dto.rotate)} />
       </div>
     </div>
   );

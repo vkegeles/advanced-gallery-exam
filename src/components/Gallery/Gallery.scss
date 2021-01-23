@@ -19,6 +19,10 @@
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  &:focus {
+    border: none;
+    outline: none;
+  }
 }
 
 .gallery-modal-overlay {
@@ -33,7 +37,9 @@
 .gallery-modal-img {
   width: auto;
   max-width: 80vw;
-  height: 80vh;
+  height: 85vh;
+  border: solid white 3px;
+  border-radius: 3px;
 }
 
 .gallery-loading {

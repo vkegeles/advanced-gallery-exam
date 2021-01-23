@@ -19,7 +19,8 @@ class Gallery extends React.Component {
       images: [],
       galleryWidth: 1000,
       showModal: false,
-      urlImage: '',
+      urlModalImage: '',
+      rotateModalImage: 0,
       loading: false,
       page: 0, //last uploaded page
       prevY: 0,
@@ -99,20 +100,20 @@ class Gallery extends React.Component {
     this.setState({ showModal: false });
   }
 
-  handleRotate = (image) => {
+  handleRotate = (index, image) => {
     const images = [...this.state.images];
-    const index = images.indexOf(image);
     images[index].rotate = (images[index].rotate + ROTATE_ANGLE);
     this.setState({ images });
   }
 
-  handleDelete = (image) => {
-    const images = this.state.images.filter(dto => dto.id !== image.id);
+  handleDelete = (index, image) => {
+    const images = [...this.state.images];
+    images.splice(index, 1);
     this.setState({ images });
   }
 
-  handleExpand = (urlImage) => {
-    this.setState({ urlImage });
+  handleExpand = (urlModalImage, rotateModalImage) => {
+    this.setState({ urlModalImage, rotateModalImage });
     this.handleOpenModal();
   }
 
@@ -148,7 +149,7 @@ class Gallery extends React.Component {
         }
         else {
           images.splice(index, 0, this.state.imageDroped);
-          images.splice(this.state.indexDroped + 1, 1);//change
+          images.splice(this.state.indexDroped + 1, 1);
 
         }
       }
@@ -179,7 +180,9 @@ class Gallery extends React.Component {
           overlayClassName="gallery-modal-overlay"
           contentLabel="Expanded image in Modal"
         >
-          <img className='gallery-modal-img' src={this.state.urlImage} alt='big-modal' />
+          <img className='gallery-modal-img' src={this.state.urlModalImage} alt='big-modal' style={{
+            transform: `rotate(${this.state.rotateModalImage}deg)`
+          }} />
         </ReactModal>
 
         {this.state.images.map((dto, index) => {
